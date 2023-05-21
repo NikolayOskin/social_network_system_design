@@ -1,0 +1,298 @@
+openapi: 3.0.3
+info:
+  title: Social Network API - OpenAPI 3.0
+  version: 1.0.0
+paths:
+  /friends/add:
+    post:
+      tags:
+        - friends
+      summary: Add user to authenticated user friend list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '201':
+          description: Created
+        '401':
+          description: Not authenticated
+  /friends/delete/{userId}:
+    delete:
+      tags:
+        - friends
+      summary: Delete friend from friend list of authenticated user
+      parameters:
+        - $ref: "#/components/parameters/userIdParam"
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Not authenticated
+  /users/{userId}/profile:
+    get:
+      tags:
+        - users
+      summary: Get user profile
+      parameters:
+        - $ref: "#/components/parameters/userIdParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+  /users/{userId}/friends:
+    get:
+      tags:
+        - users
+      summary: Get user friend list
+      parameters:
+        - $ref: "#/components/parameters/userIdParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /users/{userId}/feed:
+    get:
+      tags:
+        - users
+      summary: Get user feed
+      parameters:
+        - $ref: "#/components/parameters/userIdParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /feed:
+    get:
+      tags:
+        - feed
+      summary: Get feed of authenticated user
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '401':
+          description: Not authenticated
+  /feed/add-post:
+    post:
+      tags:
+        - feed
+      summary: Add post to authenticated user feed
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                image:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '201':
+          description: Created
+        '401':
+          description: Not authenticated
+  /chats:
+    get:
+      tags:
+        - chats
+      summary: Get all chats of authenticated user
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chat'
+        '401':
+          description: Not authenticated
+  /chats/{chatId}:
+    get:
+      tags:
+        - chats
+      summary: Get all messages of a chat
+      parameters:
+        - $ref: "#/components/parameters/chatIdParam"
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '401':
+          description: Not authenticated
+  /chats/{chatId}/add-message:
+    post:
+      tags:
+        - chats
+      summary: Add message to a chat
+      parameters:
+        - $ref: "#/components/parameters/chatIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '201':
+          description: Created
+        '401':
+          description: Not authenticated
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    userIdParam:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: integer
+    chatIdParam:
+      name: chatId
+      in: path
+      required: true
+      schema:
+        type: integer
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        full_name:
+          type: string
+          example: Ivan Ivanov
+        avatar_url:
+          type: string
+      required:
+        - id
+        - full_name
+        - avatar_url
+    UserProfile:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: Ivan
+        second_name:
+          type: string
+          example: Ivanov
+        country:
+          type: string
+          example: Россия
+        city:
+          type: string
+          example: Москва
+      required:
+        - first_name
+        - second_name
+        - country
+        - city
+    Post:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        created_at:
+          type: integer
+          example: 1423428457123
+        text:
+          type: string
+        views:
+          type: integer
+      required:
+        - user_id
+        - created_at
+        - text
+        - views
+    Chat:
+      type: object
+      properties:
+        chat_id:
+          type: integer
+        user_id:
+          type: integer
+        created_at:
+          type: integer
+          example: 34734648273823
+      required:
+        - chat_id
+        - user_id
+        - created_at
+    Message:
+      type: object
+      properties:
+        message_id:
+          type: integer
+        chat_id:
+          type: integer
+        user_id:
+          type: integer
+        text:
+          type: string
+          example: "This is a message text"
+        created_at:
+          type: integer
+          example: 5774347384234
+      required:
+        - message_id
+        - chat_id
+        - user_id
+        - text
+        - created_at
