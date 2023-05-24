@@ -1,0 +1,114 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  id integer [PK]
+  username text
+  email text
+  created_at timestamp
+}
+
+Table profiles {
+  id integer [PK]
+  user_id integer [ref: > users.id]
+  first_name text
+  last_name text
+  description text
+  city_id integer [ref: > cities.id]
+}
+
+Table profile_photos {
+  id integer [PK]
+  media_id integer [ref: > media.id]
+  created_at timestamp
+}
+
+Table cities {
+  id integer [PK]
+  name text
+}
+
+Table posts {
+  id integer [PK]
+  body text
+  user_id integer [ref: > users.id]
+  views integer
+  likes integer
+  created_at timestamp
+}
+
+Table post_media {
+  id integer [PK]
+  post_id integer [ref: > posts.id]
+  media_id integer [ref: > media.id]
+}
+
+table chats {
+  id integer [PK]
+  created_at timestamp
+}
+
+table users_chats {
+  id integer [PK]
+  user_id integer [ref: > users.id]
+  chat_id integer [ref: > chats.id]
+}
+
+table messages {
+  id integer [PK]
+  text text
+  user_id integer [ref: > users.id]
+  chat_id integer [ref: > chats.id]
+  is_read bool
+  created_at timestamp
+}
+
+table message_media {
+  id integer [PK]
+  message_id integer [ref: > messages.id]
+  media_id integer [ref: > media.id]
+}
+
+table comments {
+  id integer [PK]
+  text text
+  user_id integer [ref: > users.id]
+  post_id integer [ref: > posts.id]
+  created_at timestamp
+}
+
+table comment_media {
+  id integer [PK]
+  comment_id integer [ref: > comments.id]
+  media_id integer [ref: > media.id]
+}
+
+table friends {
+  id integer [PK]
+  user_id_1 integer [ref: > users.id]
+  user_id_2 integer [ref: > users.id]
+}
+
+table lovers {
+  id integer [PK]
+  user_id_1 integer [ref: > users.id]
+  user_id_2 integer [ref: > users.id]
+}
+
+table subscribers {
+  id integer [PK]
+  user_id integer [ref: > users.id]
+  follower_id integer [ref: > users.id]
+}
+
+table media {
+  id integer [PK]
+  object_name text
+  type_id integer [ref: > media_types.id]
+  created_at timestamp
+}
+
+table media_types {
+  id integer [PK]
+  name text
+}
